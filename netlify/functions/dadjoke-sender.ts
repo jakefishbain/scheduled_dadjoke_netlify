@@ -21,8 +21,7 @@ export const handler: Handler = async () => {
     const transporter = nodemailer.createTransport({
       host: "smtp.zoho.com",
       secure: true,
-      // port: 465,
-      port: 25,
+      port: 465,
       tls: {
         ciphers : 'SSLv3',
       },
