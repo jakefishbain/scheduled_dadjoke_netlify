@@ -29,17 +29,6 @@ export const handler: Handler = async () => {
       },
     });
 
-    // console.log('username: ', process.env.USERNAME)
-    // console.log('password: ', process.env.PASSWORD)
-
-    // const response = await transporter.sendMail({text: joke + '\n\n🐟', ...mailOptions}, function(error, info){
-    //   console.log('in transporter.sendMail')
-    //   if (error) {
-    //     console.log('ERROR!!! ', error);
-    //   } else {
-    //     console.log('Email sent: ' + info.response);
-    //   }
-    // });
     return new Promise(
       (resolve, reject) => {
           transporter.sendMail(mailOptions, (error, info) => {
@@ -53,13 +42,4 @@ export const handler: Handler = async () => {
           });
 
       })
-
-  
-    // return {
-    //   statusCode: 200,
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify(joke, null, 2),
-    // };
   };

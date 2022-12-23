@@ -1,2 +1,2 @@
 [functions.dadjoke-sender]
-schedule = "* * * * *"
+schedule = "15 21 * * *"
