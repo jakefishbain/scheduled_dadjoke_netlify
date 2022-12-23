@@ -1,0 +1,15 @@
+{
+  "name": "scheduled_dadjoke_netlify",
+  "version": "1.0.0",
+  "description": "netlify version of serverless cron job to send dad jokes",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@netlify/functions": "^1.3.0",
+    "node-fetch": "^3.3.0"
+  }
+}
