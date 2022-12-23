@@ -19,18 +19,21 @@ export const handler: Handler = async () => {
     };
 
     const transporter = nodemailer.createTransport({
-        host: "smtp.zoho.com",
-        secure: true,
-        port: 465,
-        auth: {
-          user: process.env.USERNAME,
-          pass: process.env.PASSWORD
-        },
-      });
+      host: "smtp.zoho.com",
+      secure: true,
+      port: 465,
+      auth: {
+        user: process.env.USERNAME,
+        pass: process.env.PASSWORD
+      },
+    });
 
-    transporter.sendMail({text: joke + '\n\n🐟', ...mailOptions}, function(error, info){
+    console.log('username: ', process.env.USERNAME)
+    console.log('password: ', process.env.PASSWORD)
+
+    await transporter.sendMail({text: joke + '\n\n🐟', ...mailOptions}, function(error, info){
       if (error) {
-        console.log(error);
+        console.log('ERROR!!! ', error);
       } else {
         console.log('Email sent: ' + info.response);
       }
