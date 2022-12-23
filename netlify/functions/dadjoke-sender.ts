@@ -15,7 +15,8 @@ export const handler: Handler = async () => {
     const mailOptions = {
       from: 'jake@jakefishbain.com',
       bcc: 'jakefishbain@gmail.com',
-      subject: 'Dad Joke of the Day 👴🏼'
+      subject: 'Dad Joke of the Day 👴🏼',
+      text: joke + '\n\n🐟'
     };
 
     const transporter = nodemailer.createTransport({
