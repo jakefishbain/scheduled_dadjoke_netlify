@@ -21,7 +21,7 @@ export const handler: Handler = async () => {
     const transporter = nodemailer.createTransport({
       host: "smtp.zoho.com",
       secure: true,
-      port: 465,
+      port: 587,
       tls: {
         ciphers : 'SSLv3',
       },
@@ -34,7 +34,7 @@ export const handler: Handler = async () => {
     // console.log('username: ', process.env.USERNAME)
     // console.log('password: ', process.env.PASSWORD)
 
-    await transporter.sendMail({text: joke + '\n\n🐟', ...mailOptions}, function(error, info){
+    const response = await transporter.sendMail({text: joke + '\n\n🐟', ...mailOptions}, function(error, info){
       console.log('in transporter.sendMail')
       if (error) {
         console.log('ERROR!!! ', error);
@@ -48,6 +48,6 @@ export const handler: Handler = async () => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(joke, null, 2),
+      body: JSON.stringify(response, null, 2),
     };
   };
