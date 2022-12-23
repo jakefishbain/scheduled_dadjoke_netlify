@@ -1,0 +1,2 @@
+[functions.dadjoke-sender]
+schedule = "* * * * *"
