@@ -45,6 +45,5 @@ export const handler = async () => {
   return {
     statusCode: 200,
     body: JSON.stringify(joke, null, 2)
-    // body: 'waddup chat?',
   };
 };
