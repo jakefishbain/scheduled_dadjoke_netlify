@@ -12,7 +12,7 @@ export const handler = async () => {
 
   console.log('JOKE: ', joke)
 
-    const mailOptions = {
+  const mailOptions = {
     from: 'jake@jakefishbain.com',
     to: emails,
     subject: 'Dad Joke of the Day 👴🏼',
@@ -20,7 +20,7 @@ export const handler = async () => {
   };
 
   const transporter = nodemailer.createTransport({
-    host: "smtppro.zoho.com",
+    host: "smtp.zoho.com",
     secure: true,
     port: 465,
     auth: {
@@ -29,13 +29,11 @@ export const handler = async () => {
     }
   });
 
-  new Promise((resolve,reject) => {     
-    let resp = false;
-    
+  await new Promise((resolve,reject) => {     
     transporter.sendMail(mailOptions, function(error, info){
         if (error) {
-            console.log("error is "+error);
-          reject(error); // or use rejcet(false) but then you will have to handle errors
+          console.log("error is "+ error);
+          reject(error);
         } 
       else {
           console.log('Email sent: ' + info.response);
