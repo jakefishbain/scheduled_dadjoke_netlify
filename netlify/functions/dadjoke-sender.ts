@@ -15,8 +15,8 @@ export const handler: Handler = async () => {
     const mailOptions = {
       from: 'jake@jakefishbain.com',
       // bcc: 'jakefishbain@gmail.com',
-      // to: emails,
-      to: 'jakefishbain@gmail.com',
+      to: emails,
+      // to: 'jakefishbain@gmail.com',
       subject: 'Dad Joke of the Day 👴🏼',
       text: joke + '\n\n🐟'
     };
@@ -31,23 +31,19 @@ export const handler: Handler = async () => {
       }
     });
 
-    // return {
-    //   statusCode: 200,
-    //   body: joke
-    // }
 
-    return new Promise(
-      (resolve, reject) => {
-          transporter.sendMail(mailOptions, (error, info) => {
-              if (error) {
-                  console.error(`couldn't send mail ${error}`);
-                  reject(error)
-              } else {
-                  console.log('Message sent: ' + info.response);
-                  resolve(info.response)
-              }
-          });
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.error(`couldn't send mail ${error}`);
+            // reject(error)
+        } else {
+            console.log('Message sent: ' + info.response);
+            // resolve(info.response)
+        }
+    });
 
-      }
-    )
+    return {
+      statusCode: 200,
+      // body: joke
+    }
   };
