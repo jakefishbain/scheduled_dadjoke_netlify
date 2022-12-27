@@ -12,41 +12,45 @@ export const handler: Handler = async () => {
   
     console.log('JOKE: ', joke)
 
-    const mailOptions = {
-      from: 'jake@jakefishbain.com',
-      to: emails,
-      subject: 'Dad Joke of the Day 👴🏼',
-      text: joke + '\n\n🐟'
-    };
+    // const mailOptions = {
+    //   from: 'jake@jakefishbain.com',
+    //   to: emails,
+    //   subject: 'Dad Joke of the Day 👴🏼',
+    //   text: joke + '\n\n🐟'
+    // };
 
-    const transporter = nodemailer.createTransport({
-      host: "smtppro.zoho.com",
-      secure: true,
-      port: 465,
-      auth: {
-        user: process.env.USERNAME,
-        pass: process.env.PASSWORD
-      }
-    });
+    // const transporter = nodemailer.createTransport({
+    //   host: "smtppro.zoho.com",
+    //   secure: true,
+    //   port: 465,
+    //   auth: {
+    //     user: process.env.USERNAME,
+    //     pass: process.env.PASSWORD
+    //   }
+    // });
 
-    return new Promise((resolve,reject) => {     
-      let resp = false;
+    // new Promise((resolve,reject) => {     
+    //   let resp = false;
      
-      transporter.sendMail(mailOptions, function(error, info){
-         if (error) {
-             console.log("error is "+error);
-            reject(error); // or use rejcet(false) but then you will have to handle errors
-         } 
-        else {
-            console.log('Email sent: ' + info.response);
-            resolve(info.respinse);
-         }
+    //   transporter.sendMail(mailOptions, function(error, info){
+    //      if (error) {
+    //          console.log("error is "+error);
+    //         reject(error); // or use rejcet(false) but then you will have to handle errors
+    //      } 
+    //     else {
+    //         console.log('Email sent: ' + info.response);
+    //         resolve(info.response);
+    //      }
+    //   });
+    // })
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json',
       },
-      {
-        statusCode: 200,
-        body: joke
-      });
-    })
+      body: JSON.stringify(joke, null, 2)
+    }
 
     // return await transporter.sendMail(mailOptions, (error, info) => {
     //   if (error) {
