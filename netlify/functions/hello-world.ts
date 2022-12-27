@@ -29,6 +29,21 @@ export const handler = async () => {
     }
   });
 
+  new Promise((resolve,reject) => {     
+    let resp = false;
+    
+    transporter.sendMail(mailOptions, function(error, info){
+        if (error) {
+            console.log("error is "+error);
+          reject(error); // or use rejcet(false) but then you will have to handle errors
+        } 
+      else {
+          console.log('Email sent: ' + info.response);
+          resolve(info.response);
+        }
+    });
+  })
+
   return {
     statusCode: 200,
     body: JSON.stringify(joke, null, 2)
