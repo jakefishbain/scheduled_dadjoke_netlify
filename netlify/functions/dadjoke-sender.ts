@@ -15,20 +15,26 @@ export const handler: Handler = async () => {
     const mailOptions = {
       from: 'jake@jakefishbain.com',
       // bcc: 'jakefishbain@gmail.com',
-      to: emails,
+      // to: emails,
+      to: 'jakefishbain@gmail.com',
       subject: 'Dad Joke of the Day 👴🏼',
       text: joke + '\n\n🐟'
     };
 
     const transporter = nodemailer.createTransport({
-      host: "smtp.zoho.com",
+      host: "smtppro.zoho.com",
       secure: true,
       port: 465,
       auth: {
         user: process.env.USERNAME,
         pass: process.env.PASSWORD
-      },
+      }
     });
+
+    // return {
+    //   statusCode: 200,
+    //   body: joke
+    // }
 
     return new Promise(
       (resolve, reject) => {
