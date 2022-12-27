@@ -1,2 +1,2 @@
 [functions.hello-world]
-schedule = "15 1 * * *"
+schedule = "15 13 * * *"
