@@ -32,14 +32,14 @@ export const handler: Handler = async () => {
     });
 
 
-    transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error(`couldn't send mail ${error}`);
-            // reject(error)
-        } else {
-            console.log('Message sent: ' + info.response);
-            // resolve(info.response)
-        }
+    await transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+          console.error(`couldn't send mail ${error}`);
+          // reject(error)
+      } else {
+          console.log('Message sent: ' + info.response);
+          // resolve(info.response)
+      }
     });
 
     return {
