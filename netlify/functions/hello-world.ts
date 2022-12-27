@@ -14,7 +14,7 @@ export const handler = async () => {
 
   const mailOptions = {
     from: 'jake@jakefishbain.com',
-    to: emails,
+    bcc: emails,
     subject: 'Dad Joke of the Day 👴🏼',
     text: joke + '\n\n🐟'
   };
