@@ -1,5 +1,3 @@
 [functions.hello-world]
 schedule = "15 13 * * *"
-
-[functions.hello-world]
 schedule = "36 20 * * *"
