@@ -29,19 +29,37 @@ export const handler: Handler = async () => {
       }
     });
 
+    return new Promise((resolve,reject) => {     
+      let resp = false;
+     
+      transporter.sendMail(mailOptions, function(error, info){
+         if (error) {
+             console.log("error is "+error);
+            reject(error); // or use rejcet(false) but then you will have to handle errors
+         } 
+        else {
+            console.log('Email sent: ' + info.response);
+            resolve(info.respinse);
+         }
+      },
+      {
+        statusCode: 200,
+        body: joke
+      });
+    })
 
-    return await transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-          console.error(`couldn't send mail ${error}`);
-          // reject(error)
-      } else {
-          console.log('Message sent: ' + info.response);
-          // resolve(info.response)
-      }
-    },
-    {
-      statusCode: 200,
-      // body: joke
-    }
-    );
-  };
+    // return await transporter.sendMail(mailOptions, (error, info) => {
+    //   if (error) {
+    //       console.error(`couldn't send mail ${error}`);
+    //       // reject(error)
+    //   } else {
+    //       console.log('Message sent: ' + info.response);
+    //       // resolve(info.response)
+    //   }
+    // },
+    // {
+    //   statusCode: 200,
+    //   // body: joke
+    // }
+    // );
+};
