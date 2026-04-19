@@ -16,6 +16,20 @@ Set these in your Vercel project settings:
 - `PASSWORD` - SMTP password or app password
 - `CRON_SECRET` - shared secret used by Vercel Cron (recommended)
 
+Where to get them:
+
+- `USERNAME`
+  - Use the full email address of the mailbox sending the joke (for example `yourname@yourdomain.com`).
+  - In Zoho Mail this is usually the same login/email identity you use for SMTP.
+- `PASSWORD`
+  - Prefer a Zoho **App Password** instead of your normal mailbox password.
+  - Generate it in your Zoho account security settings (Search: **Zoho Mail app password**).
+  - If App Passwords are unavailable on your plan, use the SMTP password for that mailbox.
+- `CRON_SECRET`
+  - You create this yourself (it is not issued by Zoho).
+  - Generate a long random value (at least 32 characters), e.g. from `openssl rand -base64 32`.
+  - Add this same value in Vercel as `CRON_SECRET` and keep it private.
+
 Optional timezone controls:
 
 - `SEND_TIMEZONE` - IANA timezone like `America/New_York`
