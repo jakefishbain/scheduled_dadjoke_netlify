@@ -68,3 +68,19 @@ Example for US Eastern time morning sends:
 - Set `SEND_TIMEZONE=America/New_York`
 - Set `SEND_HOUR_LOCAL=8`
 - Configure cron to run at least hourly (requires a plan that supports hourly crons), then only the 8 AM local run sends.
+
+## How to confirm the cron is running in Vercel
+
+1. In the Vercel dashboard, open your project.
+2. Go to the **Cron Jobs** section and confirm there is an entry for `/api/dadjoke-sender` with schedule `15 13 * * *`.
+3. Open project **Logs** and filter for function path `/api/dadjoke-sender` around the scheduled time.
+4. Look for a `200` response and JSON response fields like:
+   - `sent: true` when email was sent
+   - `sent: false, skipped: true` when timezone gating intentionally skipped
+5. You can also trigger manually by calling the route with your bearer token:
+
+```bash
+curl -H "Authorization: Bearer $CRON_SECRET" https://<your-project>.vercel.app/api/dadjoke-sender
+```
+
+If this returns `{"sent":true,...}`, your SMTP/env setup is working and cron executions should do the same on schedule.
