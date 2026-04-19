@@ -19,17 +19,27 @@ async function getDadJoke(): Promise<string> {
 }
 
 function createTransporter() {
-  if (!process.env.USERNAME || !process.env.PASSWORD) {
-    throw new Error('Missing USERNAME or PASSWORD env vars for SMTP authentication.');
+  const smtpUser = process.env.SMTP_USERNAME ?? process.env.USERNAME;
+  const smtpPass = process.env.SMTP_PASSWORD ?? process.env.PASSWORD;
+  const smtpHost = process.env.SMTP_HOST ?? 'smtppro.zoho.com';
+  const smtpPort = Number(process.env.SMTP_PORT ?? 465);
+  const smtpSecure = (process.env.SMTP_SECURE ?? 'true') === 'true';
+
+  if (!smtpUser || !smtpPass) {
+    throw new Error('Missing SMTP credentials. Set SMTP_USERNAME/SMTP_PASSWORD (or USERNAME/PASSWORD).');
+  }
+
+  if (!Number.isFinite(smtpPort)) {
+    throw new Error('SMTP_PORT must be a number.');
   }
 
   return nodemailer.createTransport({
-    host: 'smtp.zoho.com',
-    secure: true,
-    port: 465,
+    host: smtpHost,
+    secure: smtpSecure,
+    port: smtpPort,
     auth: {
-      user: process.env.USERNAME,
-      pass: process.env.PASSWORD
+      user: smtpUser,
+      pass: smtpPass
     }
   });
 }
@@ -86,8 +96,9 @@ export default async function handler(req: any, res: any) {
     const joke = await getDadJoke();
 
     const transporter = createTransporter();
+    await transporter.verify();
     await transporter.sendMail({
-      from: process.env.USERNAME,
+      from: process.env.SMTP_FROM ?? process.env.SMTP_USERNAME ?? process.env.USERNAME,
       bcc: emails,
       subject: 'Dad Joke of the Day 👴🏼',
       text: `${joke}\n\n🐟`
@@ -102,6 +113,19 @@ export default async function handler(req: any, res: any) {
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
     console.error('Failed to send dad joke email:', error);
+    if (
+      typeof error === 'object' &&
+      error !== null &&
+      'code' in error &&
+      (error as { code?: string }).code === 'EAUTH'
+    ) {
+      return res.status(500).json({
+        sent: false,
+        error:
+          'SMTP authentication failed (EAUTH/535). Use Zoho app password, verify SMTP_USERNAME, and confirm SMTP host/port.'
+      });
+    }
+
     return res.status(500).json({ sent: false, error: message });
   }
 }

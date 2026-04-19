@@ -12,16 +12,24 @@ This project now runs as a Vercel cron-triggered serverless function.
 
 Set these in your Vercel project settings:
 
-- `USERNAME` - SMTP username / sender email (Zoho)
-- `PASSWORD` - SMTP password or app password
+- `SMTP_USERNAME` - SMTP username / sender email (Zoho)
+- `SMTP_PASSWORD` - SMTP app password (recommended) or SMTP password
 - `CRON_SECRET` - shared secret used by Vercel Cron (recommended)
+- `SMTP_FROM` (optional) - sender "from" address (defaults to `SMTP_USERNAME`)
+- `SMTP_HOST` (optional) - defaults to `smtppro.zoho.com`
+- `SMTP_PORT` (optional) - defaults to `465`
+- `SMTP_SECURE` (optional) - defaults to `true`
+
+Backwards compatibility:
+
+- `USERNAME` and `PASSWORD` are still supported as fallbacks, but prefer `SMTP_USERNAME`/`SMTP_PASSWORD`.
 
 Where to get them:
 
-- `USERNAME`
+- `SMTP_USERNAME`
   - Use the full email address of the mailbox sending the joke (for example `yourname@yourdomain.com`).
   - In Zoho Mail this is usually the same login/email identity you use for SMTP.
-- `PASSWORD`
+- `SMTP_PASSWORD`
   - Prefer a Zoho **App Password** instead of your normal mailbox password.
   - Generate it in your Zoho account security settings (Search: **Zoho Mail app password**).
   - If App Passwords are unavailable on your plan, use the SMTP password for that mailbox.
@@ -84,3 +92,16 @@ curl -H "Authorization: Bearer $CRON_SECRET" https://<your-project>.vercel.app/a
 ```
 
 If this returns `{"sent":true,...}`, your SMTP/env setup is working and cron executions should do the same on schedule.
+
+## Troubleshooting `535 Authentication Failed`
+
+If logs show `EAUTH` / `535 Authentication Failed`:
+
+1. Verify `SMTP_USERNAME` is the full mailbox email.
+2. Regenerate and use a Zoho **App Password** as `SMTP_PASSWORD` (recommended over primary password).
+3. Confirm host/port/security values:
+   - `SMTP_HOST=smtppro.zoho.com`
+   - `SMTP_PORT=465`
+   - `SMTP_SECURE=true`
+4. Confirm the mailbox/account is allowed to use SMTP in Zoho settings.
+5. Re-save env vars in Vercel and redeploy so the function picks up fresh values.
