@@ -19,6 +19,7 @@ Set these in your Vercel project settings:
 - `SMTP_HOST` (optional) - defaults to `smtppro.zoho.com`
 - `SMTP_PORT` (optional) - defaults to `465`
 - `SMTP_SECURE` (optional) - defaults to `true`
+- `SMTP_AUTH_METHOD` (optional) - defaults to `LOGIN` (`PLAIN`, `LOGIN`, or `XOAUTH2`)
 
 Backwards compatibility:
 
@@ -104,6 +105,7 @@ If logs show `EAUTH` / `535 Authentication Failed`:
    - `SMTP_HOST=smtppro.zoho.com` (or `smtp.zoho.com`)
    - `SMTP_PORT=465`
    - `SMTP_SECURE=true`
+   - `SMTP_AUTH_METHOD=LOGIN`
 4. Confirm the mailbox/account is allowed to use SMTP in Zoho settings.
 5. Re-save env vars in Vercel and redeploy so the function picks up fresh values.
 6. If `SMTP_HOST` is not set, the function automatically tries both `smtppro.zoho.com` and `smtp.zoho.com`.

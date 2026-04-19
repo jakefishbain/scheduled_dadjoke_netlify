@@ -11,6 +11,7 @@ type SmtpConfig = {
   secure: boolean;
   hostsToTry: string[];
   from: string;
+  authMethod: 'PLAIN' | 'LOGIN' | 'XOAUTH2';
 };
 
 async function getDadJoke(): Promise<string> {
@@ -34,6 +35,10 @@ function resolveSmtpConfig(): SmtpConfig {
   const smtpHost = process.env.SMTP_HOST;
   const smtpPort = Number(process.env.SMTP_PORT ?? 465);
   const smtpSecure = (process.env.SMTP_SECURE ?? 'true') === 'true';
+  const authMethod = (process.env.SMTP_AUTH_METHOD ?? 'LOGIN').toUpperCase() as
+    | 'PLAIN'
+    | 'LOGIN'
+    | 'XOAUTH2';
   const from = process.env.SMTP_FROM ?? smtpUser;
 
   if (!smtpUser || !smtpPass) {
@@ -50,6 +55,10 @@ function resolveSmtpConfig(): SmtpConfig {
     throw new Error('Missing sender email. Set SMTP_FROM or SMTP_USERNAME.');
   }
 
+  if (!['PLAIN', 'LOGIN', 'XOAUTH2'].includes(authMethod)) {
+    throw new Error('SMTP_AUTH_METHOD must be one of: PLAIN, LOGIN, XOAUTH2.');
+  }
+
   const hostsToTry = smtpHost ? [smtpHost] : DEFAULT_ZOHO_HOSTS;
 
   return {
@@ -58,7 +67,8 @@ function resolveSmtpConfig(): SmtpConfig {
     port: smtpPort,
     secure: smtpSecure,
     hostsToTry,
-    from
+    from,
+    authMethod
   };
 }
 
@@ -70,7 +80,8 @@ function createTransporter(config: SmtpConfig, host: string) {
     auth: {
       user: config.user,
       pass: config.pass
-    }
+    },
+    authMethod: config.authMethod
   });
 }
 
@@ -169,7 +180,7 @@ export default async function handler(req: any, res: any) {
       return res.status(500).json({
         sent: false,
         error:
-          'SMTP authentication failed (EAUTH/535). Use Zoho app password, verify SMTP_USERNAME, and confirm SMTP host/port (smtppro.zoho.com or smtp.zoho.com).'
+          'SMTP authentication failed (EAUTH/535). Use Zoho app password, verify SMTP_USERNAME, confirm SMTP host/port, and try SMTP_AUTH_METHOD=LOGIN.'
       });
     }
 
