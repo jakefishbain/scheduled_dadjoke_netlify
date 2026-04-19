@@ -23,6 +23,7 @@ Set these in your Vercel project settings:
 Backwards compatibility:
 
 - `USERNAME` and `PASSWORD` are still supported as fallbacks, but prefer `SMTP_USERNAME`/`SMTP_PASSWORD`.
+- `SMTP_USER` / `SMTP_PASS` are also accepted aliases.
 
 Where to get them:
 
@@ -105,3 +106,11 @@ If logs show `EAUTH` / `535 Authentication Failed`:
    - `SMTP_SECURE=true`
 4. Confirm the mailbox/account is allowed to use SMTP in Zoho settings.
 5. Re-save env vars in Vercel and redeploy so the function picks up fresh values.
+
+If logs show `Missing USERNAME or PASSWORD env vars for SMTP authentication`:
+
+1. That message is from an older build of this function.
+2. Confirm your project is deployed with the latest code and then set:
+   - `SMTP_USERNAME`
+   - `SMTP_PASSWORD`
+3. Redeploy after adding/changing env vars (Vercel only injects env changes on a new deployment).

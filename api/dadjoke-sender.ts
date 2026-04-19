@@ -19,14 +19,16 @@ async function getDadJoke(): Promise<string> {
 }
 
 function createTransporter() {
-  const smtpUser = process.env.SMTP_USERNAME ?? process.env.USERNAME;
-  const smtpPass = process.env.SMTP_PASSWORD ?? process.env.PASSWORD;
+  const smtpUser = process.env.SMTP_USERNAME ?? process.env.SMTP_USER ?? process.env.USERNAME;
+  const smtpPass = process.env.SMTP_PASSWORD ?? process.env.SMTP_PASS ?? process.env.PASSWORD;
   const smtpHost = process.env.SMTP_HOST ?? 'smtppro.zoho.com';
   const smtpPort = Number(process.env.SMTP_PORT ?? 465);
   const smtpSecure = (process.env.SMTP_SECURE ?? 'true') === 'true';
 
   if (!smtpUser || !smtpPass) {
-    throw new Error('Missing SMTP credentials. Set SMTP_USERNAME/SMTP_PASSWORD (or USERNAME/PASSWORD).');
+    throw new Error(
+      'Missing SMTP credentials. Set SMTP_USERNAME + SMTP_PASSWORD (accepted aliases: SMTP_USER/SMTP_PASS, USERNAME/PASSWORD).'
+    );
   }
 
   if (!Number.isFinite(smtpPort)) {
