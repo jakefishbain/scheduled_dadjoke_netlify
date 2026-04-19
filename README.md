@@ -101,11 +101,12 @@ If logs show `EAUTH` / `535 Authentication Failed`:
 1. Verify `SMTP_USERNAME` is the full mailbox email.
 2. Regenerate and use a Zoho **App Password** as `SMTP_PASSWORD` (recommended over primary password).
 3. Confirm host/port/security values:
-   - `SMTP_HOST=smtppro.zoho.com`
+   - `SMTP_HOST=smtppro.zoho.com` (or `smtp.zoho.com`)
    - `SMTP_PORT=465`
    - `SMTP_SECURE=true`
 4. Confirm the mailbox/account is allowed to use SMTP in Zoho settings.
 5. Re-save env vars in Vercel and redeploy so the function picks up fresh values.
+6. If `SMTP_HOST` is not set, the function automatically tries both `smtppro.zoho.com` and `smtp.zoho.com`.
 
 If logs show `Missing USERNAME or PASSWORD env vars for SMTP authentication`:
 

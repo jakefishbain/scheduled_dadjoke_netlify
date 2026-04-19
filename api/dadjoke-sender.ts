@@ -2,6 +2,16 @@ import nodemailer from 'nodemailer';
 import emails from '../emails.json';
 
 const JOKE_ENDPOINT = 'https://icanhazdadjoke.com/';
+const DEFAULT_ZOHO_HOSTS = ['smtppro.zoho.com', 'smtp.zoho.com'];
+
+type SmtpConfig = {
+  user: string;
+  pass: string;
+  port: number;
+  secure: boolean;
+  hostsToTry: string[];
+  from: string;
+};
 
 async function getDadJoke(): Promise<string> {
   const response = await fetch(JOKE_ENDPOINT, {
@@ -18,12 +28,13 @@ async function getDadJoke(): Promise<string> {
   return response.text();
 }
 
-function createTransporter() {
+function resolveSmtpConfig(): SmtpConfig {
   const smtpUser = process.env.SMTP_USERNAME ?? process.env.SMTP_USER ?? process.env.USERNAME;
   const smtpPass = process.env.SMTP_PASSWORD ?? process.env.SMTP_PASS ?? process.env.PASSWORD;
-  const smtpHost = process.env.SMTP_HOST ?? 'smtppro.zoho.com';
+  const smtpHost = process.env.SMTP_HOST;
   const smtpPort = Number(process.env.SMTP_PORT ?? 465);
   const smtpSecure = (process.env.SMTP_SECURE ?? 'true') === 'true';
+  const from = process.env.SMTP_FROM ?? smtpUser;
 
   if (!smtpUser || !smtpPass) {
     throw new Error(
@@ -35,13 +46,30 @@ function createTransporter() {
     throw new Error('SMTP_PORT must be a number.');
   }
 
-  return nodemailer.createTransport({
-    host: smtpHost,
-    secure: smtpSecure,
+  if (!from) {
+    throw new Error('Missing sender email. Set SMTP_FROM or SMTP_USERNAME.');
+  }
+
+  const hostsToTry = smtpHost ? [smtpHost] : DEFAULT_ZOHO_HOSTS;
+
+  return {
+    user: smtpUser,
+    pass: smtpPass,
     port: smtpPort,
+    secure: smtpSecure,
+    hostsToTry,
+    from
+  };
+}
+
+function createTransporter(config: SmtpConfig, host: string) {
+  return nodemailer.createTransport({
+    host,
+    secure: config.secure,
+    port: config.port,
     auth: {
-      user: smtpUser,
-      pass: smtpPass
+      user: config.user,
+      pass: config.pass
     }
   });
 }
@@ -97,20 +125,37 @@ export default async function handler(req: any, res: any) {
 
     const joke = await getDadJoke();
 
-    const transporter = createTransporter();
-    await transporter.verify();
-    await transporter.sendMail({
-      from: process.env.SMTP_FROM ?? process.env.SMTP_USERNAME ?? process.env.USERNAME,
-      bcc: emails,
-      subject: 'Dad Joke of the Day 👴🏼',
-      text: `${joke}\n\n🐟`
-    });
+    const smtpConfig = resolveSmtpConfig();
+    let lastError: unknown;
+    let connectedHost = '';
+    for (const host of smtpConfig.hostsToTry) {
+      try {
+        const transporter = createTransporter(smtpConfig, host);
+        await transporter.verify();
+        await transporter.sendMail({
+          from: smtpConfig.from,
+          bcc: emails,
+          subject: 'Dad Joke of the Day 👴🏼',
+          text: `${joke}\n\n🐟`
+        });
+        connectedHost = host;
+        lastError = null;
+        break;
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    if (lastError) {
+      throw lastError;
+    }
 
     return res.status(200).json({
       sent: true,
       recipients: emails.length,
       joke,
-      reason: timeGate.reason
+      reason: timeGate.reason,
+      smtpHost: connectedHost
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error';
@@ -124,7 +169,7 @@ export default async function handler(req: any, res: any) {
       return res.status(500).json({
         sent: false,
         error:
-          'SMTP authentication failed (EAUTH/535). Use Zoho app password, verify SMTP_USERNAME, and confirm SMTP host/port.'
+          'SMTP authentication failed (EAUTH/535). Use Zoho app password, verify SMTP_USERNAME, and confirm SMTP host/port (smtppro.zoho.com or smtp.zoho.com).'
       });
     }
 
